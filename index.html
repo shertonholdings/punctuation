@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capitalization and Punctuation Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            color: #333;
+        }
+        .logo {
+            width: 100px;
+            margin-top: 20px;
+        }
+        .sentence {
+            margin: 20px;
+            font-size: 22px;
+            padding: 10px;
+            background-color: #e0f7fa;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .feedback {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .corrected-sentence {
+            font-size: 20px;
+            margin-top: 10px;
+            color: #007bff;
+        }
+        .option-btn {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .option-btn:hover {
+            background-color: #0056b3;
+        }
+        .more-lessons-btn {
+            margin-top: 60px; /* Keep larger spacing to avoid overlap */
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .more-lessons-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Logo -->
+<img src="https://i.imgur.com/mwpTHJj.png" class="logo" alt="Logo">
+
+<h1>Capitalization and Punctuation Practice</h1>
+
+<!-- Instructions -->
+<p>Click on the words that need capitalization and select the correct punctuation mark to complete the sentence.</p>
+
+<!-- Sentence to fix -->
+<div class="sentence" id="sentenceContainer"></div>
+
+<!-- Corrected sentence (displayed immediately below) -->
+<div class="corrected-sentence" id="correctedSentence"></div>
+
+<!-- Options for punctuation -->
+<div id="punctuationOptions"></div>
+
+<!-- Feedback message -->
+<div class="feedback" id="feedbackMessage"></div>
+
+<!-- "More Lessons" button -->
+<a href="https://sites.google.com/view/grades-1/home" class="more-lessons-btn">More Lessons</a>
+
+<!-- JavaScript -->
+<script>
+    const sentences = [
+        {
+            text: "the sun rises in the east",
+            corrections: ["The", "sun", "rises", "in", "the", "east."],
+            punctuationOptions: [".", "!", "?"],
+            correctPunctuation: "."
+        },
+        {
+            text: "are you going to the party",
+            corrections: ["Are", "you", "going", "to", "the", "party?"],
+            punctuationOptions: ["!", ".", "?"],
+            correctPunctuation: "?"
+        },
+        {
+            text: "i have a dog named rover",
+            corrections: ["I", "have", "a", "dog", "named", "Rover."],
+            punctuationOptions: [".", "?", "!"],
+            correctPunctuation: "."
+        },
+        {
+            text: "what a beautiful day",
+            corrections: ["What", "a", "beautiful", "day!"],
+            punctuationOptions: ["?", ".", "!"],
+            correctPunctuation: "!"
+        },
+        {
+            text: "we will go to the park tomorrow",
+            corrections: ["We", "will", "go", "to", "the", "park", "tomorrow."],
+            punctuationOptions: [".", "!", "?"],
+            correctPunctuation: "."
+        },
+        {
+            text: "wow that was amazing",
+            corrections: ["Wow!", "That", "was", "amazing!"],
+            punctuationOptions: ["?", ".", "!"],
+            correctPunctuation: "!"
+        },
+        {
+            text: "he is the president of the united states",
+            corrections: ["He", "is", "the", "president", "of", "the", "United", "States."],
+            punctuationOptions: [".", "?", "!"],
+            correctPunctuation: "."
+        },
+        {
+            text: "can you believe it",
+            corrections: ["Can", "you", "believe", "it?"],
+            punctuationOptions: ["?", ".", "!"],
+            correctPunctuation: "?"
+        },
+        {
+            text: "they live in new york city",
+            corrections: ["They", "live", "in", "New", "York", "City."],
+            punctuationOptions: [".", "!", "?"],
+            correctPunctuation: "."
+        },
+        {
+            text: "john and i are best friends",
+            corrections: ["John", "and", "I", "are", "best", "friends."],
+            punctuationOptions: [".", "?", "!"],
+            correctPunctuation: "."
+        }
+    ];
+
+    let currentSentenceIndex = 0;
+    let correctedSentence = [];
+
+    function setupExercise() {
+        feedbackMessage.innerText = '';
+        correctedSentence = []; // Reset corrected sentence for each new exercise
+
+        const currentSentence = sentences[currentSentenceIndex];
+        const words = currentSentence.text.split(' ');
+        correctedSentence = [...words]; // Copy original sentence to the corrected version
+
+        // Clear previous sentence
+        const sentenceContainer = document.getElementById('sentenceContainer');
+        sentenceContainer.innerHTML = '';
+
+        // Generate clickable words for capitalization corrections
+        words.forEach((word, index) => {
+            const span = document.createElement('span');
+            span.innerText = word + ' ';
+            span.style.cursor = 'pointer';
+            span.onclick = () => fixCapitalization(word, index);
+            sentenceContainer.appendChild(span);
+        });
+
+        // Clear previous punctuation options
+        const punctuationOptions = document.getElementById('punctuationOptions');
+        punctuationOptions.innerHTML = '';
+
+        // Generate options for punctuation
+        currentSentence.punctuationOptions.forEach(option => {
+            const button = document.createElement('button');
+            button.innerText = option;
+            button.className = 'option-btn';
+            button.onclick = () => choosePunctuation(option);
+            punctuationOptions.appendChild(button);
+        });
+
+        // Clear corrected sentence display
+        document.getElementById('correctedSentence').innerText = '';
+    }
+
+    function fixCapitalization(word, index) {
+        const currentSentence = sentences[currentSentenceIndex];
+        const correctWord = currentSentence.corrections[index];
+
+        // If the selected word is not already capitalized correctly
+        if (correctedSentence[index] !== correctWord) {
+            correctedSentence[index] = correctWord; // Capitalize the word in the corrected sentence
+            displayCorrectedSentence();
+        }
+    }
+
+    function choosePunctuation(selectedPunctuation) {
+        const currentSentence = sentences[currentSentenceIndex];
+        if (selectedPunctuation === currentSentence.correctPunctuation) {
+            correctedSentence[correctedSentence.length - 1] = correctedSentence[correctedSentence.length - 1].replace(/[^a-zA-Z]/g, '') + selectedPunctuation; // Add punctuation at the end
+            displayCorrectedSentence();
+
+            feedbackMessage.innerText = "Correct punctuation!";
+            feedbackMessage.style.color = "green";
+
+            setTimeout(() => {
+                currentSentenceIndex++;
+                if (currentSentenceIndex < sentences.length) {
+                    setupExercise();
+                } else {
+                    feedbackMessage.innerText = "Great job! You've completed all the exercises!";
+                }
+            }, 2000);
+        } else {
+            feedbackMessage.innerText = "Incorrect punctuation. Try again!";
+            feedbackMessage.style.color = "red";
+        }
+    }
+
+    function displayCorrectedSentence() {
+        // Join the corrected words and display the sentence immediately below the sentence to be corrected
+        document.getElementById('correctedSentence').innerText = correctedSentence.join(' ');
+    }
+
+    // Start the first exercise
+    setupExercise();
+</script>
+
+</body>
+</html>
